@@ -24,7 +24,7 @@
   },
   "view": {
     "signup": {
-      "passwd2": "Duplicate Account",
+      "passwd2": "Verify Password",
       "alreadySignup": "Already have an account?"
     },
     "login": {
