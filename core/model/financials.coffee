@@ -1,12 +1,12 @@
+Mabolo = require 'mabolo'
 Q = require 'q'
 
-{mabolo} = root
-{ObjectID} = mabolo
+{ObjectID} = Mabolo
 
 ###
   Model: Financials.
 ###
-module.exports = Financials = mabolo.model 'Financials',
+module.exports = Financials = Mabolo.model 'Financials',
   # Public: Related account
   account_id:
     required: true
@@ -37,6 +37,8 @@ module.exports = Financials = mabolo.model 'Financials',
   created_at:
     type: Date
     default: -> new Date()
+
+Account = require './account'
 
 ###
   Public: Create financial log.
@@ -93,7 +95,7 @@ Financials.getDepositLogs = ({_id}, {req, limit} = {}) ->
 
   Return {Promise} resolve with array of {Financials}.
 ###
-Financials.getBillingLogs = ({_id}, {limit}) ->
+Financials.getBillingLogs = ({_id}, {limit} = {}) ->
   @find
     account_id: _id
     type: 'billing'
@@ -139,7 +141,7 @@ Financials::updateStatus = (status) ->
         status: @status
       ,
         status: status
-      .then (result) =>
+      .tap (result) =>
         if result?.status == 'success'
           @populate().then =>
             @account.increaseBalance @amount

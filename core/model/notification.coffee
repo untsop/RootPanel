@@ -1,13 +1,13 @@
+Mabolo = require 'mabolo'
 _ = require 'lodash'
 Q = require 'q'
 
-{mabolo} = root
-{ObjectID} = mabolo
+{ObjectID} = Mabolo
 
 ###
   Model: Notification.
 ###
-module.exports = Notification = mabolo.model 'Notification',
+module.exports = Notification = Mabolo.model 'Notification',
   # Public: Plugin that created this notification
   source:
     required: true
@@ -55,7 +55,7 @@ module.exports = Notification = mabolo.model 'Notification',
   Return {Boolean}.
 ###
 Notification::isGroupNotice = ->
-  return @target instanceof ObjectID
+  return @target not instanceof ObjectID
 
 ###
   Public: Send a email about this notification.

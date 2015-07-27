@@ -1,14 +1,14 @@
+Mabolo = require 'mabolo'
 _ = require 'lodash'
 Q = require 'q'
 
-{mabolo} = root
-{ObjectID} = mabolo
+{ObjectID} = Mabolo
 
 ###
   Model: Component coworker,
   Embedded as a array at `coworkers` of {Component}.
 ###
-Coworker = mabolo.model 'Coworker',
+Coworker = Mabolo.model 'Coworker',
   # Public: Related account
   account_id:
     required: true
@@ -24,7 +24,7 @@ Coworker = mabolo.model 'Coworker',
 ###
   Model: Component.
 ###
-module.exports = Component = mabolo.model 'Component',
+module.exports = Component = Mabolo.model 'Component',
   # Public: Owner account
   account_id:
     required: true
@@ -64,6 +64,8 @@ module.exports = Component = mabolo.model 'Component',
   dependencies:
     type: Object
     default: -> {}
+
+Account = require './account'
 
 Component.createComponent = (account, {name, type, node, dependencies, options}) ->
   @create
@@ -152,7 +154,7 @@ Component::populate = ->
     @account = _.find accounts, ({_id}) =>
       return @account_id.equals _id
 
-    @coworkers.each (coworker) ->
+    @coworkers.forEach (coworker) ->
       coworker.account = _.find accounts, ({_id}) ->
         return coworker.account_id.equals _id
 

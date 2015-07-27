@@ -1,12 +1,12 @@
+Mabolo = require 'mabolo'
 _ = require 'lodash'
 
-{mabolo} = root
-{ObjectID} = mabolo
+{ObjectID} = Mabolo
 
 ###
   Model: Security log
 ###
-module.exports = SecurityLog = mabolo.model 'SecurityLog',
+module.exports = SecurityLog = Mabolo.model 'SecurityLog',
   # Public: Related account
   account_id:
     required: true
@@ -51,5 +51,5 @@ SecurityLog.createLog = (account, {token, type, options}) ->
   @create
     account_id: account._id
     options: options
-    token: _.pick token, 'type', 'token', 'created_at', 'payload'
+    token: _.pick token, 'type', 'code', 'created_at', 'options'
     type: type

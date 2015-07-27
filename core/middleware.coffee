@@ -1,4 +1,3 @@
-expressBunyanLogger = require 'express-bunyan-logger'
 expressSession = require 'express-session'
 redisStore = require 'connect-redis'
 moment = require 'moment-timezone'
@@ -7,6 +6,8 @@ csrf = require 'csrf'
 path = require 'path'
 fs = require 'fs'
 _ = require 'lodash'
+
+ViewHelpers = require './view-helpers'
 
 {Account, SecurityLog, config} = root
 
@@ -81,6 +82,8 @@ exports.renderHelpers = (req, res, next) ->
     site:
       name: req.getTranslator() config.web.name
 
+    helpers: new ViewHelpers req, res
+
   res.render = (view, locals = {}) ->
     root.views.render view, _.defaults(locals, res.locals)
     .done (html) ->
@@ -94,7 +97,7 @@ exports.errorHandling = (err, req, res, next) ->
   if err.constructor in builtInErrors
     root.log err.stack
 
-  res.json
+  res.status(400).json
     error: err.message
 
 exports.session = ({redis}) ->

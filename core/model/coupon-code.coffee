@@ -1,16 +1,16 @@
+Mabolo = require 'mabolo'
 _ = require 'lodash'
 Q = require 'q'
 
 utils = require '../utils'
 
-{mabolo} = root
-{ObjectID} = mabolo
+{ObjectID} = Mabolo
 
 ###
   Model: Apply log of CouponCode,
   Embedded as a array at `apply_log` of {CouponCode}.
 ###
-ApplyLog = mabolo.model 'ApplyLog',
+ApplyLog = Mabolo.model 'ApplyLog',
   # Public: Related account
   account_id:
     required: true
@@ -24,7 +24,7 @@ ApplyLog = mabolo.model 'ApplyLog',
 ###
   Model: CouponCode.
 ###
-module.exports = CouponCode = mabolo.model 'CouponCode',
+module.exports = CouponCode = Mabolo.model 'CouponCode',
   # Public: Code of coupon
   code:
     required: true
@@ -44,7 +44,7 @@ module.exports = CouponCode = mabolo.model 'CouponCode',
   type:
     required: true
     type: String
-    enum: ['amount']
+    enum: ['cash']
 
   # Public: Custom options of coupon, used by couponType
   options:
@@ -76,7 +76,7 @@ CouponCode.findByCode = (code, options...) ->
   Return {Promise} resolve with array of {CouponCode}.
 ###
 CouponCode.createCoupons = ({type, options, expired_at, available_times}, count) ->
-  Q.all [1 .. count].map ->
+  Q.all [1 .. count].map =>
     @create
       code: utils.randomString 16
       type: type
@@ -94,7 +94,7 @@ CouponCode::pick = ->
 
   Return {Promise} resolve with {Boolean}.
 ###
-CouponCode::validate = (account) ->
+CouponCode::validateCoupon = (account) ->
   @populate().then ->
     if @available_times != undefined and @available_times <= 0
       return false
@@ -135,7 +135,7 @@ CouponCode::apply = (account) ->
 
   Return {Promise}.
 ###
-CouponCode::populate = ({req}) ->
+CouponCode::populate = ({req} = {}) ->
   if @provider
     return Q @
 

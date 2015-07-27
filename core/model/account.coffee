@@ -1,15 +1,14 @@
 validator = require 'validator'
+Mabolo = require 'mabolo'
 _ = require 'lodash'
 
 utils = require '../utils'
-
-{mabolo} = root
 
 ###
   Model: Account Session Token Model,
   Embedded as a array at `tokens` of {Account}.
 ###
-Token = mabolo.model 'Token',
+Token = Mabolo.model 'Token',
   # Public: Type of token
   type:
     required: true
@@ -42,7 +41,7 @@ Token = mabolo.model 'Token',
 
   TODO: verify fields
 ###
-Preferences = mabolo.model 'Preferences',
+Preferences = Mabolo.model 'Preferences',
   # Public: A url refer to a avatar of account
   avatar_url: String
   # Public: A language code, e.g. `zh-CN`
@@ -55,7 +54,7 @@ Preferences = mabolo.model 'Preferences',
 ###
   Model: Account Model.
 ###
-module.exports = Account = mabolo.model 'Account',
+module.exports = Account = Mabolo.model 'Account',
   # Public: User name
   username:
     required: true
@@ -121,6 +120,7 @@ Account.ensureIndex
 Account.ensureIndex
   'tokens.code': 1
 ,
+  sparse: true
   unique: true
 
 ###
@@ -167,13 +167,13 @@ Account.search = (identify) ->
   Return {Promise} resolve with `{account: Account, token: Token}` or `{}`.
 ###
 Account.authenticate = (tokenCode) ->
-  @findOneAndUpdate(
+  @findOneAndUpdate
     'tokens.code': tokenCode
   ,
     $set:
       'tokens.$.updated_at': new Date()
 
-  ).then (account) ->
+  .then (account) ->
     return {
       account: account
 
@@ -251,7 +251,7 @@ Account.register = ({username, email, password}) ->
   Public: Create token for this account.
 
   * `type` {String} Type of {Token}
-  * `options` {Object} Options of {Token}
+  * `options` (optional) {Object} Options of {Token}
 
   Return {Promise} resolve with create {Token}.
 ###
@@ -263,11 +263,10 @@ Account::createToken = (type, options) ->
     created_at: new Date()
     updated_at: new Date()
 
-  @update(
+  @update
     $push:
       tokens: token
-  ).then ->
-    return token
+  .thenResolve token
 
 ###
   Public: Remove all token and create a new one just for reset password.
@@ -392,6 +391,11 @@ Account::isAdmin = ->
 ###
 Account::inGroup = (group) ->
   return group in @groups
+
+Account::joinGroup = (group) ->
+  @update
+    $addToSet:
+      groups: group
 
 ###
   Public: Set email.
